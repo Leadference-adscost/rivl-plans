@@ -268,7 +268,8 @@
           <div class="form-row">
             <div class="field">
               <div class="label">Exportar configuración</div>
-              <button class="btn" id="btnExport">Descargar JSON</button>
+              <button class="btn" id="btnExport">Descargar plans.json</button>
+              <div class="hint" style="margin-top:8px;color:#9aa3af;font-size:12px;line-height:1.35">Para publicar cambios: descarga <b>plans.json</b> y súbelo a tu repo (reemplazando el archivo <b>plans.json</b>). Los clientes siempre ven lo que esté publicado.</div>
             </div>
             <div class="field">
               <div class="label">Importar configuración</div>
@@ -330,7 +331,7 @@
 
   var adminDefaults = { user:'admin', pass:'rivl2025!' };
 
-  var state = { data:null, admin:null, logged:false, idleTimer:null };
+  var state = { data:null, base:null, admin:null, logged:false, idleTimer:null, isAdminMode:false };
   var uiState = { collapsed:{} };
 
   function migrateData(obj){
@@ -354,17 +355,45 @@
     return obj;
   }
 
-  function loadData(){
+  async function loadData(){
+    // Admin mode (draft) is enabled only when URL has ?admin=1 or hash #admin
+    try{
+      var sp = new URLSearchParams(location.search);
+      state.isAdminMode = (sp.get('admin') === '1') || (location.hash === '#admin');
+    }catch(e){ state.isAdminMode = (location.hash === '#admin'); }
+
+    // 1) Load published config from plans.json (GitHub Pages)
+    var published = null;
+    try{
+      var url = 'plans.json?v=' + Date.now();
+      var res = await fetch(url, { cache: 'no-store' });
+      if(res && res.ok) published = await res.json();
+    }catch(e){ published = null; }
+
+    state.base = published ? migrateData(published) : clone(defaults);
+
+    // 2) In public mode, always use the published config (no local drafts)
+    if(!state.isAdminMode){
+      state.data = clone(state.base);
+      return;
+    }
+
+    // 3) In admin mode, load draft from localStorage (fallback to published)
     try{
       var raw = localStorage.getItem(storeKeys.data);
-      state.data = raw ? migrateData(JSON.parse(raw)) : clone(defaults);
-      saveData();
+      state.data = raw ? migrateData(JSON.parse(raw)) : clone(state.base);
     }catch(e){
-      state.data = clone(defaults);
-      saveData();
+      state.data = clone(state.base);
     }
+    saveData();
   }
-  function saveData(){ try{ localStorage.setItem(storeKeys.data, JSON.stringify(state.data)); }catch(e){} }
+
+  function saveData(){
+    // Only persist drafts in admin mode
+    if(!state.isAdminMode) return;
+    try{ localStorage.setItem(storeKeys.data, JSON.stringify(state.data)); }catch(e){}
+  }
+catch(e){} }
 
   function loadAdmin(){
     try{
@@ -762,7 +791,7 @@ function setupCarousel(){
   document.addEventListener('click', function(e){
     if(e.target && e.target.id==='btnExport'){
       var blob = new Blob([JSON.stringify(state.data, null, 2)], {type:'application/json'});
-      var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'RIVL_plans_backup.json'; a.click(); URL.revokeObjectURL(a.href);
+      var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'plans.json'; a.click(); URL.revokeObjectURL(a.href);
     }
   });
   $('#fileImport').addEventListener('change', function(e){
@@ -793,10 +822,10 @@ function setupCarousel(){
   });
 
   // ==== Init ====
-  function init(){
-    loadData();
+  async function init(){
+    await loadData();
     loadAdmin();
-    renderCards();
+renderCards();
     setupCarousel();
     if(location.hash === '#admin'){ openLogin(); }
   }

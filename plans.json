@@ -1,0 +1,64 @@
+{
+  "whatsapp": {
+    "phone": "50766760936",
+    "template": "Hola, estoy interesado(a) en el plan {plan} de RIVL. ¿Podemos coordinar detalles y disponibilidad?"
+  },
+  "ui": {
+    "badge_label": "MÁS ELEGIDO",
+    "cta_default": "Get it now",
+    "footer_note_default": "Mientras menos sesiones, mayor costo por sesión."
+  },
+  "plans": [
+    {
+      "id": "individual",
+      "title": "Individual",
+      "price": "$180–$220",
+      "period": "/ mensual",
+      "features": [
+        "A domicilio",
+        "12/16/20 sesiones (3–5x semana)",
+        "Sesión 60 min (calentamiento + fuerza + core + estiramientos)",
+        "Cardio guiado días de descanso",
+        "Pago 50%/100% al inicio"
+      ],
+      "cta": "",
+      "note": "",
+      "featured": false,
+      "order": 1
+    },
+    {
+      "id": "pareja",
+      "title": "Pareja",
+      "price": "$250–$300",
+      "period": "/ mensual",
+      "features": [
+        "A domicilio para 2 personas",
+        "12/16/20 sesiones (3–5x semana)",
+        "Sesión 60 min (rutina balanceada + core)",
+        "Cardio en días de descanso (intervalos)",
+        "Pago 50%/100% al inicio"
+      ],
+      "cta": "",
+      "note": "",
+      "featured": true,
+      "order": 2
+    },
+    {
+      "id": "elite",
+      "title": "Élite",
+      "price": "A cotizar",
+      "period": "/ personalizado",
+      "features": [
+        "Plan a medida (objetivo específico, eventos, etc.)",
+        "3–6 sesiones/semana según disponibilidad",
+        "Asesoría nutricional de apoyo",
+        "Seguimiento con métricas y progresos",
+        "Pago 50%/100% al inicio"
+      ],
+      "cta": "",
+      "note": "",
+      "featured": false,
+      "order": 3
+    }
+  ]
+}
