@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>RIVL • Training Plans</title>
+<meta name="theme-color" content="#0b0c0f" />
+<style>
+  :root{
+    --bg: #0b0c0f;
+    --card: #121419;
+    --muted: #9aa3af;
+    --text: #e6eaf2;
+    --accent: #00F0A8;
+    --accent-2: #36ffe6;
+    --ring: rgba(0, 240, 168, .5);
+    --radius: 18px;
+    --shadow: 0 10px 25px rgba(0,0,0,.45);
+    --glass: rgba(255,255,255,.04);
+    --card-stroke: rgba(255,255,255,.06);
+    --focus: 0 0 0 3px rgba(0,240,168,.25), 0 0 0 8px rgba(0,240,168,.09);
+    --danger: #ff6b6b;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family: ui-sans-serif, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    background:
+      radial-gradient(600px 300px at 50% -80px, rgba(0,240,168,.15), transparent 60%),
+      radial-gradient(500px 250px at 120% 20%, rgba(54,255,230,.10), transparent 60%),
+      linear-gradient(180deg, #0b0c0f 0%, #0b0c0f 100%);
+    color:var(--text);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  header{ padding:20px 16px 8px; display:flex; align-items:center; justify-content:center; gap:10px; position:relative; }
+  .logo-img{ height:36px; width:auto; display:block; filter: drop-shadow(0 8px 18px rgba(0,0,0,.35)); }
+  .logo-word{ font-weight:800; letter-spacing:.1em; font-size:22px; line-height:1;
+    background:linear-gradient(180deg,#cfd6de 0%, #9aa3ad 40%, #6b7683 60%, #c7d0d8 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow: 0 10px 18px rgba(0,0,0,.4); }
+  .admin-lock{ position:absolute; right:12px; top:12px; width:34px; height:34px; border-radius:10px; border:1px solid var(--card-stroke);
+    background:linear-gradient(180deg, #0f1116, #0e1014); display:grid; place-items:center; cursor:pointer; box-shadow: var(--shadow); }
+  .admin-lock svg{ width:18px; height:18px; fill:#9aa3af }
+
+  .brand{ display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:6px; }
+  .brand-pill{ padding:6px 10px; border-radius:999px; font-size:11px; font-weight:700; letter-spacing:.06em;
+    color:#05291f; background:linear-gradient(90deg, var(--accent), var(--accent-2)); box-shadow: 0 6px 16px rgba(0,240,168,.35); }
+
+  h1{ font-size:22px; text-align:center; margin:2px 12px 6px; font-weight:800; letter-spacing:.01em }
+  .sub{ color:#9aa3af; font-size:13px; text-align:center; margin:6px 24px 18px }
+
+  .wrap{ max-width:960px; margin:0 auto; padding:4px 14px 22px }
+  .grid{ display:grid; gap:14px; grid-template-columns: 1fr; }
+  @media (min-width:720px){ .grid{ grid-template-columns: repeat(3, 1fr); gap:18px; } }
+
+  .card{ position:relative; border-radius:var(--radius);
+    background: linear-gradient(180deg, var(--glass), transparent), linear-gradient(180deg, #0f1116 0%, #0f1216 100%);
+    border:1px solid var(--card-stroke); box-shadow: var(--shadow); overflow:hidden;
+    transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; outline:none; }
+  .card:hover{ transform: translateY(-2px) }
+  .card.selected{ border-color: rgba(0,240,168,.45); box-shadow: 0 0 0 1px rgba(0,240,168,.25) inset, 0 0 40px 8px rgba(0,240,168,.10), var(--shadow); }
+  .badge{ position:absolute; top:10px; right:10px; font-size:11px; font-weight:700; letter-spacing:.06em; color:#052d22;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2)); border-radius:999px; padding:6px 10px; box-shadow: 0 6px 16px rgba(0,240,168,.35); }
+
+  .cardHead{ padding:18px 16px 8px }
+  .title{ font-size:16px; font-weight:800; letter-spacing:.02em; margin:0 0 6px }
+  .billed{ color:#9aa3af; font-size:12px; margin:0 0 4px }
+  .price{ display:flex; align-items:flex-end; gap:6px; margin:6px 0 2px }
+  .price .amount{ font-size:28px; font-weight:900 }
+  .price .per{ color:#9aa3af; font-size:12px; margin-bottom:4px }
+  .divider{ margin:10px 0 6px; height:1px; border:none; background: linear-gradient(90deg, transparent, rgba(255,255,255,.08), transparent); }
+
+  ul.features{ list-style:none; margin:0; padding:0 16px 12px; color:#cfd6de }
+  ul.features li{ display:flex; align-items:flex-start; gap:10px; padding:8px 0; font-size:14px; }
+  .tick{ width:18px; height:18px; flex:0 0 18px; border-radius:6px; background: linear-gradient(180deg, rgba(0,240,168,.18), rgba(0,240,168,.06)); border:1px solid rgba(0,240,168,.35); display:grid; place-items:center; }
+  .tick svg{ width:12px; height:12px; fill:var(--accent) }
+
+  .cta{ margin:6px 16px 18px; border:none; width:calc(100% - 32px); display:block; font-weight:800; letter-spacing:.02em; padding:14px 16px; border-radius:14px;
+    color:#041b14; background:linear-gradient(90deg, var(--accent), var(--accent-2)); box-shadow: 0 12px 28px rgba(0,240,168,.35), 0 0 0 1px rgba(0,240,168,.25) inset; cursor:pointer; }
+  .cta:active{ transform: translateY(1px) scale(.99) }
+
+  .footer-note{ color:#9aa3af; font-size:12px; text-align:center; margin:6px 16px 18px }
+
+  .modal{ position:fixed; inset:0; display:none; background:rgba(0,0,0,.6); z-index:60; backdrop-filter: blur(4px); }
+  .modal.show{ display:block }
+
+  .panel{ position:fixed; inset:0; z-index:70; display:none;
+    background: radial-gradient(800px 400px at 70% -10%, rgba(0,240,168,.12), transparent 60%), linear-gradient(180deg, #0b0c0f, #0b0c0f);
+    overflow-y:auto; -webkit-overflow-scrolling:touch; }
+  .panel.show{ display:block }
+  .panel-inner{ max-width:980px; margin:0 auto; padding:14px 14px 24px; padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 96px); min-height:100%; }
+  .panel-header{ display:flex; align-items:center; justify-content:space-between; gap:8px; padding:12px 6px 10px; }
+  .panel-title{ font-weight:800; letter-spacing:.02em; font-size:18px }
+  .panel-actions{ display:flex; gap:8px }
+  .btn{ border:1px solid var(--card-stroke); color:var(--text); background:#0f1116; padding:10px 12px; border-radius:12px; font-weight:700; cursor:pointer; }
+  .btn.accent{ color:#05291f; background:linear-gradient(90deg, var(--accent), var(--accent-2)); border-color: transparent; }
+  .btn.danger{ border-color: rgba(255,255,255,.12); color:#ffdada; background:#2a1416 }
+  .btn:active{ transform: scale(.98) }
+
+  .tabs{ display:flex; gap:8px; padding:6px 0 10px; flex-wrap:wrap }
+  .tab{ border:1px solid var(--card-stroke); padding:10px 12px; border-radius:999px; cursor:pointer; color:#9aa3af; background:#0f1116; font-weight:700; font-size:13px; }
+  .tab.active{ color:#05291f; background:linear-gradient(90deg, var(--accent), var(--accent-2)); border-color:transparent }
+
+  .plan-index{ display:flex; flex-wrap:wrap; gap:8px; margin:6px 0 12px; }
+  .plan-index .idx-pill{ border:1px solid var(--card-stroke); background:#0f1116; color:#cfd6de; border-radius:999px; padding:8px 10px; font-size:12px; cursor:pointer; }
+  .plan-index .idx-pill:hover{ border-color: rgba(0,240,168,.35); color:#cffff1 }
+  .flash{ animation: flash 1.2s ease; }
+  @keyframes flash{ 0%{ box-shadow: 0 0 0 0 rgba(0,240,168,.0); } 20%{ box-shadow: 0 0 0 2px rgba(0,240,168,.35); } 100%{ box-shadow: 0 0 0 0 rgba(0,240,168,.0); } }
+
+  .tabpanes{ border:1px solid var(--card-stroke); border-radius:16px; overflow:hidden; }
+  .pane{ display:none; padding:14px; background:linear-gradient(180deg, #0f1116, #0f1216); }
+  .pane.active{ display:block }
+
+  .form-row{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px }
+  .field{ flex:1 1 220px; display:flex; flex-direction:column; gap:6px }
+  .label{ font-size:12px; color:#9aa3af }
+  .input, .textarea, .select{ background:#0c0e12; color:var(--text); border:1px solid var(--card-stroke); border-radius:12px; padding:12px; outline:none; }
+  .input:focus, .textarea:focus, .select:focus{ box-shadow: var(--focus) }
+
+  .plan-editor{ border:1px solid var(--card-stroke); border-radius:14px; margin-bottom:12px; background:#0e1014; overflow:hidden; position:relative; }
+  .plan-editor.accent-a{ border-left: 3px solid rgba(0,240,168,.55); }
+  .plan-editor.accent-b{ border-left: 3px solid rgba(54,255,230,.55); }
+  .plan-header{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 12px; background: linear-gradient(180deg, rgba(0,240,168,.08), rgba(0,240,168,.04)); border-bottom: 1px solid var(--card-stroke); }
+  .h-left{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .pill-order{ font-size:11px; font-weight:800; letter-spacing:.06em; color:#05291f; background: linear-gradient(90deg, var(--accent), var(--accent-2)); padding:6px 10px; border-radius:999px; box-shadow: 0 4px 12px rgba(0,240,168,.25); line-height:1; }
+  .head-line{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; color:#cfe9e2; font-size:12px; }
+  .head-line .tag{ border:1px solid rgba(255,255,255,.08); padding:6px 8px; border-radius:10px; background:#0f1116; color:#cfd6de; line-height:1; }
+
+  .collapse-btn{ border:1px solid var(--card-stroke); background:#0f1116; color:#cfd6de; border-radius:10px; padding:8px 10px; font-size:12px; cursor:pointer; display:flex; align-items:center; gap:6px; }
+  .collapse-btn svg{ width:14px; height:14px; fill:#cfd6de; transform: rotate(0deg); transition: transform .2s ease; }
+  .plan-editor.collapsed .collapse-btn svg{ transform: rotate(-90deg); }
+  .plan-body{ padding:10px; }
+  .plan-editor.collapsed .plan-body{ display:none; }
+
+  .features-list{ display:flex; flex-direction:column; gap:8px; margin-top:6px }
+  .feat-item{ display:flex; gap:8px }
+  .feat-item .input{ flex:1 }
+  .feat-actions{ display:flex; gap:6px }
+  .mini{ padding:8px 10px; border-radius:10px; font-size:12px; }
+  .switch{ display:inline-flex; align-items:center; gap:8px; }
+  .switch input{ transform: scale(1.2); }
+
+  @media (min-width: 768px){ .logo-img{ height:44px; } }
+
+/* === Mobile carousel for pricing cards === */
+@media (max-width: 860px){
+  #cards.grid{ display:flex; gap:14px; overflow-x:auto; -webkit-overflow-scrolling:touch; scroll-snap-type:x mandatory; padding: 8px 4px 24px; }
+  #cards.grid::-webkit-scrollbar{ height:0 }
+  #cards .card{ min-width: 82vw; scroll-snap-align: center; will-change: transform; }
+}
+/* 3D coverflow transforms controlled by JS */
+#cards.carousel .card{ transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease, opacity .25s ease; }
+#cards.carousel .card:not(.selected){ opacity:.95; }
+</style>
+</head>
+<body>
+  <header>
+    <img src="data:image/png;base64,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" class="logo-img" alt="RIVL" loading="lazy" />
+    <button class="admin-lock" id="btnLock" title="Panel de administrador">
+      <svg viewBox="0 0 24 24"><path d="M12 1a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V6a5 5 0 0 0-5-5Zm0 2a3 3 0 0 1 3 3v3H9V6a3 3 0 0 1 3-3Z"/></svg>
+    </button>
+  </header>
+
+  <div class="wrap">
+    <div class="brand"><span class="brand-pill">TRAINING PLANS</span></div>
+    <h1>Elige tu plan</h1>
+    <p class="sub">Diseñado para entrenar a domicilio con resultados reales. Selecciona un plan y contáctanos por WhatsApp.</p>
+    <section id="cards" class="grid" role="list"></section>
+  </div>
+
+  <div class="modal" id="modal"></div>
+
+  <!-- Panel administrador -->
+  <section class="panel" id="adminPanel" aria-hidden="true">
+    <div class="panel-inner">
+      <div class="panel-header">
+        <div class="panel-title">RIVL • Admin</div>
+        <div class="panel-actions">
+          <button class="btn" id="btnLogout">Cerrar sesión</button>
+          <button class="btn accent" id="btnCloseAdmin">Volver</button>
+        </div>
+      </div>
+
+      <div class="tabs" id="tabs">
+        <button class="tab active" data-tab="planes">Planes</button>
+        <button class="tab" data-tab="whatsapp">WhatsApp & Mensaje</button>
+        <button class="tab" data-tab="acceso">Acceso</button>
+        <button class="tab" data-tab="backup">Backup</button>
+      </div>
+
+      <div id="planIndex" class="plan-index"></div>
+
+      <div class="tabpanes">
+        <!-- PANE: PLANES -->
+        <div class="pane active" id="pane-planes">
+          <div class="form-row">
+            <div class="field">
+              <div class="label">Plan destacado (badge)</div>
+              <select class="select" id="featuredSelect"></select>
+              <div class="label" style="margin-top:6px;">O marca desde el plan:</div>
+            </div>
+            <div class="field">
+              <div class="label">Texto del badge destacado</div>
+              <input class="input" id="uiBadgeLabel" placeholder="MÁS ELEGIDO">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="field">
+              <div class="label">Texto por defecto del botón (CTA)</div>
+              <input class="input" id="uiCTADef" placeholder="Get it now">
+            </div>
+            <div class="field">
+              <div class="label">Nota inferior por defecto (vacío = ocultar)</div>
+              <input class="input" id="uiNoteDef" placeholder="Mientras menos sesiones, mayor costo por sesión.">
+            </div>
+          </div>
+
+          <div id="editors"></div>
+        </div>
+
+        <!-- PANE: WHATSAPP -->
+        <div class="pane" id="pane-whatsapp">
+          <div class="form-row">
+            <div class="field">
+              <div class="label">Número WhatsApp (solo dígitos, con país)</div>
+              <input class="input" id="waPhone" placeholder="50766760936" />
+            </div>
+            <div class="field">
+              <div class="label">Plantilla de mensaje (usa {plan})</div>
+              <input class="input" id="waTpl" placeholder="Hola, estoy interesado(a) en el plan {plan} de RIVL..." />
+              <div class="label">Ejemplo: <span id="waPreview" style="color:#8fffd6"></span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANE: ACCESO -->
+        <div class="pane" id="pane-acceso">
+          <div class="form-row">
+            <div class="field">
+              <div class="label">Usuario actual</div>
+              <input class="input" id="accUser" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <div class="label">Contraseña actual</div>
+              <input class="input" id="accCur" type="password" />
+            </div>
+            <div class="field">
+              <div class="label">Nueva contraseña</div>
+              <input class="input" id="accNew" type="password" />
+            </div>
+            <div class="field">
+              <div class="label">Repetir nueva contraseña</div>
+              <input class="input" id="accNew2" type="password" />
+            </div>
+          </div>
+          <div class="form-row">
+            <button class="btn accent" id="btnSaveAccess">Guardar acceso</button>
+          </div>
+          <div class="label">Este panel usa almacenamiento local para desarrollo.</div>
+        </div>
+
+        <!-- PANE: BACKUP -->
+        <div class="pane" id="pane-backup">
+          <div class="form-row">
+            <div class="field">
+              <div class="label">Exportar configuración</div>
+              <button class="btn" id="btnExport">Descargar plans.json</button>
+              <div class="hint" style="margin-top:8px;color:#9aa3af;font-size:12px;line-height:1.35">Para publicar cambios: descarga <b>plans.json</b> y súbelo a tu repo (reemplazando el archivo <b>plans.json</b>). Los clientes siempre ven lo que esté publicado.</div>
+            </div>
+            <div class="field">
+              <div class="label">Importar configuración</div>
+              <input class="input" type="file" id="fileImport" accept=".json" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <div class="label">Importar pegando JSON</div>
+              <textarea class="textarea" rows="6" id="jsonPaste" placeholder='{"whatsapp": {...}, "plans": [...], "ui": {...}}'></textarea>
+            </div>
+          </div>
+          <div class="form-row">
+            <button class="btn accent" id="btnApplyPaste">Aplicar JSON pegado</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hoja de login -->
+  <div class="login-sheet" id="loginSheet" aria-hidden="true" style="position:fixed; inset:auto 0 0 0; background:#0b0c0f; border-top-left-radius:18px; border-top-right-radius:18px; padding:18px 14px 22px; z-index:80; box-shadow: 0 -10px 30px rgba(0,0,0,.5); display:none;">
+    <h3 style="margin:0 0 6px; font-size:18px; font-weight:800;">Acceder al panel</h3>
+    <div class="label">Ingresa tus credenciales para administrar los planes.</div>
+    <div class="login-row" style="display:flex; flex-direction:column; gap:10px; margin:6px 0 10px">
+      <input class="input" placeholder="Usuario" id="lgUser" />
+      <input class="input" placeholder="Contraseña" id="lgPass" type="password" />
+      <button class="btn accent" id="btnLogin">Entrar</button>
+      <div id="loginMsg" class="label"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" style="position:fixed; left:50%; transform:translateX(-50%); bottom:18px; background:#0d1311; border:1px solid rgba(0,240,168,.25); color:#a6ffe5; padding:10px 12px; border-radius:10px; display:none; z-index:90;">Guardado</div>
+
+<script>
+  // ==== Utiles ES5 ====
+  function $(sel){ return document.querySelector(sel); }
+  function $$(sel){ return document.querySelectorAll(sel); }
+  function toast(msg){ var t=$('#toast'); t.textContent=msg||'Guardado'; t.style.display='block'; setTimeout(function(){ t.style.display='none'; }, 1400); }
+  function clone(obj){ return JSON.parse(JSON.stringify(obj)); }
+
+  var storeKeys = { data:'RIVL_PLANS_DATA_V3_FS', admin:'RIVL_ADMIN_V3_FS' };
+
+  var defaults = {
+    whatsapp: { phone:'50766760936', template:'Hola, estoy interesado(a) en el plan {plan} de RIVL. ¿Podemos coordinar detalles y disponibilidad?' },
+    ui: { badge_label:'MÁS ELEGIDO', cta_default:'Get it now', footer_note_default:'Mientras menos sesiones, mayor costo por sesión.' },
+    plans: [
+      { id:'individual', title:'Individual', price:'$180–$220', period:'/ mensual',
+        features:['A domicilio','12/16/20 sesiones (3–5x semana)','Sesión 60 min (calentamiento + fuerza + core + estiramientos)','Cardio guiado días de descanso','Pago 50%/100% al inicio'],
+        cta:'', note:'', featured:false, order:1 },
+      { id:'pareja', title:'Pareja', price:'$250–$300', period:'/ mensual',
+        features:['A domicilio para 2 personas','12/16/20 sesiones (3–5x semana)','Sesión 60 min (rutina balanceada + core)','Cardio en días de descanso (intervalos)','Pago 50%/100% al inicio'],
+        cta:'', note:'', featured:true, order:2 },
+      { id:'elite', title:'Élite', price:'A cotizar', period:'/ personalizado',
+        features:['Plan a medida (objetivo específico, eventos, etc.)','3–6 sesiones/semana según disponibilidad','Asesoría nutricional de apoyo','Seguimiento con métricas y progresos','Pago 50%/100% al inicio'],
+        cta:'', note:'', featured:false, order:3 }
+    ]
+  };
+
+  var adminDefaults = { user:'admin', pass:'rivl2025!' };
+
+  var state = { data:null, base:null, admin:null, logged:false, idleTimer:null, isAdminMode:false };
+  var uiState = { collapsed:{} };
+
+  function migrateData(obj){
+    if(!obj || typeof obj!=='object'){ return clone(defaults); }
+    if(!obj.whatsapp) obj.whatsapp = clone(defaults.whatsapp);
+    if(!obj.ui) obj.ui = clone(defaults.ui);
+    if(!obj.plans || !obj.plans.length) obj.plans = clone(defaults.plans);
+    for(var i=0;i<obj.plans.length;i++){
+      var p = obj.plans[i] || {};
+      if(typeof p.id!=='string') p.id = 'plan-'+(i+1);
+      if(typeof p.title!=='string') p.title = 'Plan '+(i+1);
+      if(typeof p.price!=='string') p.price = '$0';
+      if(typeof p.period!=='string') p.period = '/ mensual';
+      if(!p.features) p.features = [];
+      if(typeof p.cta!=='string') p.cta = '';
+      if(typeof p.note!=='string') p.note = '';
+      if(typeof p.featured!=='boolean') p.featured = false;
+      if(typeof p.order!=='number') p.order = i+1;
+      obj.plans[i] = p;
+    }
+    return obj;
+  }
+
+  async function loadData(){
+    // Admin mode (draft) is enabled only when URL has ?admin=1 or hash #admin
+    try{
+      var sp = new URLSearchParams(location.search);
+      state.isAdminMode = (sp.get('admin') === '1') || (location.hash === '#admin');
+    }catch(e){ state.isAdminMode = (location.hash === '#admin'); }
+
+    // 1) Load published config from plans.json (GitHub Pages)
+    var published = null;
+    try{
+      var url = 'plans.json?v=' + Date.now();
+      var res = await fetch(url, { cache: 'no-store' });
+      if(res && res.ok) published = await res.json()();
+    }catch(e){ published = null; }
+
+    state.base = published ? migrateData(published) : clone(defaults);
+
+    // 2) In public mode, always use the published config (no local drafts)
+    if(!state.isAdminMode){
+      state.data = clone(state.base);
+      return;
+    }
+
+    // 3) In admin mode, load draft from localStorage (fallback to published)
+    try{
+      var raw = localStorage.getItem(storeKeys.data);
+      state.data = raw ? migrateData(JSON.parse(raw)) : clone(state.base);
+    }catch(e){
+      state.data = clone(state.base);
+    }
+    saveData();
+  }
+
+  function saveData(){
+    // Only persist drafts in admin mode
+    if(!state.isAdminMode) return;
+    try{ localStorage.setItem(storeKeys.data, JSON.stringify(state.data)); }catch(e){}
+  }
+catch(e){} }
+
+  function loadAdmin(){
+    try{
+      var raw = localStorage.getItem(storeKeys.admin);
+      state.admin = raw ? JSON.parse(raw) : clone(adminDefaults);
+      if(!state.admin.user) state.admin.user = adminDefaults.user;
+      if(!state.admin.pass) state.admin.pass = adminDefaults.pass;
+      localStorage.setItem(storeKeys.admin, JSON.stringify(state.admin));
+    }catch(e){
+      state.admin = clone(adminDefaults);
+      localStorage.setItem(storeKeys.admin, JSON.stringify(state.admin));
+    }
+  }
+
+  function startIdle(){ clearTimeout(state.idleTimer); state.idleTimer = setTimeout(function(){ logout(); }, 30*60*1000); }
+
+  // ===== Público =====
+  function formatMsg(planName){ return (state.data.whatsapp.template||'').replace(/\{plan\}/g, planName); }
+  function getBadgeLabel(){ return (state.data.ui && state.data.ui.badge_label) || defaults.ui.badge_label; }
+  function getCtaText(p){ return (p.cta && p.cta.trim()) || (state.data.ui && state.data.ui.cta_default) || defaults.ui.cta_default; }
+  function getFooterNote(p){ var g = (state.data.ui && state.data.ui.footer_note_default) || ''; var n = (p.note||'').trim(); return n || g || ''; }
+
+  function renderCards(){
+    var wrap = $('#cards'); wrap.innerHTML = '';
+    var plans = state.data.plans.slice().sort(function(a,b){ return (a.order||0)-(b.order||0); });
+    for(var i=0;i<plans.length;i++){
+      var p = plans[i];
+      var card = document.createElement('article');
+      card.className = 'card' + (p.featured ? ' selected' : '');
+      card.setAttribute('role','listitem');
+      card.setAttribute('tabindex','0');
+
+      var badge = p.featured ? '<span class="badge">'+getBadgeLabel()+'</span>' : '';
+      var feats = '';
+      for(var j=0;j<p.features.length;j++){
+        var f = p.features[j];
+        feats += '<li><span class="tick" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M7.6 13.2 4.8 10.4l-1.4 1.4L7.6 16l9-9-1.4-1.4z"/></svg></span>'+f+'</li>';
+      }
+
+      card.innerHTML =
+        badge +
+        '<div class="cardHead">'+
+          '<p class="billed">Plan</p>'+
+          '<h2 class="title">'+p.title+'</h2>'+
+          '<div class="price">'+
+            '<span class="amount">'+p.price+'</span>'+
+            '<span class="per">'+p.period+'</span>'+
+          '</div>'+
+        '</div>'+
+        '<hr class="divider" />'+
+        '<ul class="features">'+feats+'</ul>'+
+        '<button class="cta" data-whatsapp>'+getCtaText(p)+'</button>'+
+        (getFooterNote(p) ? '<p class="footer-note">'+getFooterNote(p)+'</p>' : '');
+
+      card.addEventListener('click', function(e){
+        if(!(e.target && e.target.tagName==='BUTTON')){
+          var all = $$('#cards .card');
+          for(var k=0;k<all.length;k++){ all[k].classList.remove('selected'); }
+          card.classList.add('selected');
+        }
+      });
+      card.addEventListener('keydown', function(e){
+        if(e.key==='Enter' || e.key===' '){
+          e.preventDefault();
+          var all = $$('#cards .card');
+          for(var k=0;k<all.length;k++){ all[k].classList.remove('selected'); }
+          card.classList.add('selected');
+        }
+      });
+      card.querySelector('[data-whatsapp]').addEventListener('click', (function(planTitle){
+        return function(){
+          var phone = (state.data.whatsapp.phone||'').replace(/\D/g,'');
+          var msg = formatMsg(planTitle);
+          var url = 'https://wa.me/'+phone+'?text='+encodeURIComponent(msg);
+          window.open(url, '_blank', 'noopener');
+        };
+      })(p.title));
+
+      wrap.appendChild(card);
+    }
+
+    setupCarousel();
+  }
+
+  
+  // ===== Mobile Carousel (coverflow) =====
+function setupCarousel(){
+    var container = $('#cards');
+    if(!container) return;
+
+    var isMobile = window.innerWidth <= 860;
+
+    // If not mobile, ensure carousel class removed and bail.
+    if(!isMobile){
+      container.classList.remove('carousel');
+      return;
+    }
+
+    container.classList.add('carousel');
+
+    // Keep one-time listeners using a flag on the element.
+    if(!container._carouselState){
+      container._carouselState = { raf: null };
+
+      container.addEventListener('scroll', function(){
+        if(container._carouselState.raf) return;
+        container._carouselState.raf = window.requestAnimationFrame(function(){
+          container._carouselState.raf = null;
+          updateCarousel(container);
+        });
+      }, {passive:true});
+
+      // Click delegation: center the clicked card (unless a button was clicked)
+      container.addEventListener('click', function(e){
+        if(e.target && e.target.tagName === 'BUTTON') return;
+        var card = e.target && e.target.closest ? e.target.closest('.card') : null;
+        if(!card || !container.contains(card)) return;
+
+        try{
+          card.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+        }catch(err){
+          // Fallback for older Safari / in-app browsers
+          try{ card.scrollIntoView(true); }catch(_){}
+        }
+      });
+
+      window.addEventListener('resize', function(){
+        updateCarousel(container);
+      });
+    }
+
+    updateCarousel(container);
+  }
+
+  function updateCarousel(container){
+    if(!container) return;
+    if(window.innerWidth > 860){
+      container.classList.remove('carousel');
+      return;
+    }
+    var cards = $$('#cards .card');
+    if(cards.length===0) return;
+
+    var rect = container.getBoundingClientRect();
+    var center = rect.left + rect.width/2;
+
+    for(var i=0;i<cards.length;i++){
+      var c = cards[i];
+      var r = c.getBoundingClientRect();
+      var cCenter = r.left + r.width/2;
+      var dist = Math.min(1, Math.abs(center - cCenter) / (rect.width/2));
+      var scale = 1 - dist*0.12;
+      c.style.transform = 'scale(' + scale.toFixed(3) + ')';
+      c.style.opacity = (1 - dist*0.35).toFixed(3);
+
+      if(dist < 0.12){
+        c.classList.add('selected');
+      }else{
+        c.classList.remove('selected');
+      }
+    }
+  }
+
+
+  // ===== Login/Admin =====
+  var modal = $('#modal');
+  var panel = $('#adminPanel');
+  var loginSheet = $('#loginSheet');
+
+  function openLogin(){ $('#loginMsg').textContent = ''; $('#lgUser').value=''; $('#lgPass').value=''; modal.classList.add('show'); loginSheet.style.display='block'; $('#lgUser').focus(); }
+  function closeLogin(){ loginSheet.style.display='none'; modal.classList.remove('show'); }
+  function openAdmin(){ modal.classList.add('show'); panel.classList.add('show'); renderAdmin(); startIdle(); }
+  function closeAdmin(){ panel.classList.remove('show'); modal.classList.remove('show'); clearTimeout(state.idleTimer); }
+  function logout(){ state.logged=false; closeAdmin(); toast('Sesión cerrada'); }
+
+  $('#btnLock').addEventListener('click', openLogin);
+  $('#btnCloseAdmin').addEventListener('click', closeAdmin);
+  $('#btnLogout').addEventListener('click', logout);
+  $('#btnLogin').addEventListener('click', function(){
+    var u = $('#lgUser').value.trim();
+    var p = $('#lgPass').value;
+    if(u === state.admin.user && p === state.admin.pass){ state.logged=true; closeLogin(); openAdmin(); toast('Bienvenido'); }
+    else { $('#loginMsg').innerHTML = '<span style="color:#ffb1b1">Usuario o contraseña incorrectos</span>'; }
+  });
+
+  function setTabs(){
+    var tabs = $$('#tabs .tab');
+    for(var i=0;i<tabs.length;i++){
+      (function(btn){
+        btn.addEventListener('click', function(){
+          for(var j=0;j<tabs.length;j++){ tabs[j].classList.remove('active'); }
+          btn.classList.add('active');
+          var tab = btn.getAttribute('data-tab');
+          var panes = $$('.pane');
+          for(var k=0;k<panes.length;k++){ panes[k].classList.remove('active'); }
+          $('#pane-'+tab).classList.add('active');
+        });
+      })(tabs[i]);
+    }
+  }
+
+  function renderFeaturedSelect(){
+    var sel = $('#featuredSelect'); sel.innerHTML = '';
+    var optNone = document.createElement('option'); optNone.value=''; optNone.textContent='— Sin destacado —'; sel.appendChild(optNone);
+    for(var i=0;i<state.data.plans.length;i++){
+      var p = state.data.plans[i];
+      var o = document.createElement('option');
+      o.value = p.id;
+      o.textContent = p.title;
+      if(p.featured){ o.selected = true; }
+      sel.appendChild(o);
+    }
+    sel.onchange = function(){
+      var id = sel.value;
+      for(var i=0;i<state.data.plans.length;i++){
+        state.data.plans[i].featured = (id && state.data.plans[i].id === id);
+      }
+      saveData(); renderCards(); renderEditors(); toast('Destacado actualizado');
+    };
+  }
+
+  function planHeaderLineHTML(idx, plan){
+    var n = idx + 1;
+    var dest = plan.featured ? 'Sí' : 'No';
+    return ''+
+      '<span class="pill-order">Plan '+n+'</span>'+
+      '<div class="head-line">'+
+        '<span class="tag">[#'+n+'] '+plan.title+'</span>'+
+        '<span class="tag">ID: '+plan.id+'</span>'+
+        '<span class="tag">Orden: '+(plan.order||0)+'</span>'+
+        '<span class="tag">Destacado: '+dest+'</span>'+
+      '</div>';
+  }
+
+  function editorBlock(plan, idx){
+    var el = document.createElement('div');
+    el.className = 'plan-editor ' + (idx % 2 === 0 ? 'accent-a' : 'accent-b');
+    el.id = 'plan-block-' + plan.id;
+
+    el.innerHTML =
+      '<div class="plan-header">'+
+        '<div class="h-left">'+planHeaderLineHTML(idx, plan)+'</div>'+
+        '<button class="collapse-btn" data-collapse><svg viewBox="0 0 24 24"><path d="M8 5l8 7-8 7"/></svg> Colapsar</button>'+
+      '</div>'+
+      '<div class="plan-body">'+
+        '<div class="form-row">'+
+          '<div class="field"><div class="label">ID</div><input class="input inp-id" value="'+plan.id+'"></div>'+
+          '<div class="field"><div class="label">Título</div><input class="input inp-title" value="'+plan.title+'"></div>'+
+        '</div>'+
+        '<div class="form-row">'+
+          '<div class="field"><div class="label">Precio</div><input class="input inp-price" value="'+plan.price+'"></div>'+
+          '<div class="field"><div class="label">Periodo</div><input class="input inp-period" value="'+plan.period+'"></div>'+
+        '</div>'+
+        '<div class="form-row">'+
+          '<div class="field"><div class="label">Texto botón (CTA) — vacío usa el global</div><input class="input inp-cta" value="'+(plan.cta||'')+'"></div>'+
+          '<div class="field"><div class="label">Nota inferior — vacío usa la global</div><input class="input inp-note" value="'+(plan.note||'')+'"></div>'+
+        '</div>'+
+        '<div class="form-row">'+
+          '<label class="switch"><input type="checkbox" class="inp-featured" '+(plan.featured?'checked':'')+'> Destacar este plan</label>'+
+        '</div>'+
+        '<div class="features-list">'+
+          '<div class="label">Características</div>'+
+          (plan.features||[]).map(function(f,i){ return ''+
+            '<div class="feat-item">'+
+              '<input class="input feat" value="'+String(f).replace(/"/g,'&quot;')+'">'+
+              '<div class="feat-actions">'+
+                '<button class="btn mini" data-act="up">↑</button>'+
+                '<button class="btn mini" data-act="down">↓</button>'+
+                '<button class="btn mini danger" data-act="del">Eliminar</button>'+
+              '</div>'+
+            '</div>'; }).join('')+
+          '<div class="form-row">'+
+            '<input class="input new-feat" placeholder="Nueva característica">'+
+            '<button class="btn mini" data-act="add-feat">Agregar</button>'+
+          '</div>'+
+        '</div>'+
+        '<div class="form-row">'+
+          '<div class="field"><div class="label">Orden</div><input class="input inp-order" type="number" value="'+(plan.order||0)+'"></div>'+
+          '<div class="field" style="align-self:flex-end; display:flex; gap:6px;">'+
+            '<button class="btn mini" data-act="dup">Duplicar</button>'+
+            '<button class="btn mini danger" data-act="remove">Eliminar plan</button>'+
+          '</div>'+
+        '</div>'+
+      '</div>';
+
+    if(uiState.collapsed[plan.id]) el.classList.add('collapsed');
+    el.querySelector('[data-collapse]').addEventListener('click', function(){ el.classList.toggle('collapsed'); uiState.collapsed[plan.id] = el.classList.contains('collapsed'); });
+
+    function q(s){ return el.querySelector(s); }
+    q('.inp-id').addEventListener('change', function(e){
+      var oldId = plan.id; var newId = (e.target.value||'').trim() || oldId;
+      if(newId !== oldId){ uiState.collapsed[newId] = uiState.collapsed[oldId]; delete uiState.collapsed[oldId]; }
+      plan.id = newId; saveData(); renderEditors(); renderFeaturedSelect(); renderCards(); toast('ID actualizado');
+    });
+    q('.inp-title').addEventListener('input', function(e){ plan.title = e.target.value; saveData(); renderCards(); renderEditors(); });
+    q('.inp-price').addEventListener('input', function(e){ plan.price = e.target.value; saveData(); renderCards(); });
+    q('.inp-period').addEventListener('input', function(e){ plan.period = e.target.value; saveData(); renderCards(); });
+    q('.inp-cta').addEventListener('input', function(e){ plan.cta = e.target.value; saveData(); renderCards(); });
+    q('.inp-note').addEventListener('input', function(e){ plan.note = e.target.value; saveData(); renderCards(); });
+    q('.inp-order').addEventListener('change', function(e){ plan.order = parseInt(e.target.value||0,10); saveData(); renderEditors(); renderCards(); });
+
+    q('.inp-featured').addEventListener('change', function(e){
+      if(e.target.checked){
+        // poner este como único destacado
+        for(var i=0;i<state.data.plans.length;i++){ state.data.plans[i].featured = (state.data.plans[i]===plan); }
+      }else{
+        plan.featured = false;
+      }
+      saveData(); renderEditors(); renderFeaturedSelect(); renderCards(); toast('Destacado actualizado');
+    });
+
+    var featRows = el.querySelectorAll('.feat-item');
+    for(var i=0;i<featRows.length;i++){
+      (function(row, i){
+        row.querySelector('.feat').addEventListener('input', function(ev){ plan.features[i] = ev.target.value; saveData(); renderCards(); });
+        row.querySelector('[data-act="del"]').addEventListener('click', function(){ plan.features.splice(i,1); saveData(); renderEditors(); renderCards(); toast('Característica eliminada'); });
+        row.querySelector('[data-act="up"]').addEventListener('click', function(){ if(i>0){ var t=plan.features[i-1]; plan.features[i-1]=plan.features[i]; plan.features[i]=t; saveData(); renderEditors(); renderCards(); }});
+        row.querySelector('[data-act="down"]').addEventListener('click', function(){ if(i<plan.features.length-1){ var t=plan.features[i+1]; plan.features[i+1]=plan.features[i]; plan.features[i]=t; saveData(); renderEditors(); renderCards(); }});
+      })(featRows[i], i);
+    }
+    q('[data-act="add-feat"]').addEventListener('click', function(){
+      var val = (q('.new-feat').value||'').trim();
+      if(val){ plan.features.push(val); q('.new-feat').value=''; saveData(); renderEditors(); renderCards(); toast('Agregado'); }
+    });
+    q('[data-act="dup"]').addEventListener('click', function(){
+      var copy = clone(plan);
+      copy.id = (plan.id || 'plan')+'-'+Math.floor(Math.random()*1000);
+      copy.title = plan.title + ' (copia)';
+      copy.order = (state.data.plans.reduce(function(m,p){ return Math.max(m, p.order||0); },0) + 1);
+      copy.featured = false;
+      state.data.plans.push(copy);
+      saveData(); renderEditors(); renderFeaturedSelect(); renderCards(); toast('Plan duplicado');
+    });
+    q('[data-act="remove"]').addEventListener('click', function(){
+      if(state.data.plans.length<=1){ alert('Debe existir al menos un plan.'); return; }
+      if(confirm('¿Eliminar este plan?')){
+        var idx = state.data.plans.indexOf(plan);
+        var wasFeatured = plan.featured;
+        state.data.plans.splice(idx,1);
+        if(wasFeatured && state.data.plans.length){ state.data.plans[0].featured = true; }
+        saveData(); renderEditors(); renderFeaturedSelect(); renderCards(); toast('Plan eliminado');
+      }
+    });
+
+    return el;
+  }
+
+  function renderEditors(){
+    var box = $('#editors'); box.innerHTML = '';
+    var plans = state.data.plans.slice().sort(function(a,b){ return (a.order||0)-(b.order||0); });
+    for(var i=0;i<plans.length;i++){ box.appendChild(editorBlock(plans[i], i)); }
+    $('#uiBadgeLabel').value = (state.data.ui && state.data.ui.badge_label) || '';
+    $('#uiCTADef').value = (state.data.ui && state.data.ui.cta_default) || '';
+    $('#uiNoteDef').value = (state.data.ui && state.data.ui.footer_note_default) || '';
+
+    // Listeners globales
+    $('#uiBadgeLabel').oninput = function(e){ state.data.ui.badge_label = e.target.value; saveData(); renderCards(); };
+    $('#uiCTADef').oninput = function(e){ state.data.ui.cta_default = e.target.value; saveData(); renderCards(); };
+    $('#uiNoteDef').oninput = function(e){ state.data.ui.footer_note_default = e.target.value; saveData(); renderCards(); };
+  }
+
+  function renderWhatsAppPane(){
+    $('#waPhone').value = state.data.whatsapp.phone || '';
+    $('#waTpl').value = state.data.whatsapp.template || '';
+    $('#waPreview').textContent = formatMsg('Ejemplo');
+    $('#waPhone').oninput = function(e){ state.data.whatsapp.phone = (e.target.value||'').replace(/\D/g,''); saveData(); toast('Guardado'); };
+    $('#waTpl').oninput = function(e){ state.data.whatsapp.template = e.target.value; saveData(); $('#waPreview').textContent = formatMsg('Ejemplo'); toast('Guardado'); };
+  }
+
+  function renderAccessPane(){ $('#accUser').value = state.admin.user || ''; }
+  function renderPlanIndex(){
+    var el = $('#planIndex'); if(!el) return;
+    var plans = state.data.plans.slice().sort(function(a,b){ return (a.order||0)-(b.order||0); });
+    el.innerHTML = '';
+    for(var i=0;i<plans.length;i++){
+      var p = plans[i];
+      var n = i+1;
+      var pill = document.createElement('button');
+      pill.className = 'idx-pill'; pill.textContent = 'Plan '+n+' · '+p.title;
+      (function(pid){
+        pill.addEventListener('click', function(){
+          var target = document.getElementById('plan-block-' + pid);
+          if(target){ target.classList.add('flash'); target.scrollIntoView({behavior:'smooth', block:'start'}); setTimeout(function(){ target.classList.remove('flash'); }, 1200); }
+        });
+      })(p.id);
+      el.appendChild(pill);
+    }
+  }
+
+  function renderAdmin(){
+    setTabs(); renderFeaturedSelect(); renderEditors(); renderWhatsAppPane(); renderAccessPane(); renderPlanIndex();
+  }
+
+  // Botones fuera de panes
+  document.addEventListener('click', function(e){
+    if(e.target && e.target.id==='btnExport'){
+      var blob = new Blob([JSON.stringify(state.data, null, 2)], {type:'application/json'});
+      var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'plans.json'; a.click(); URL.revokeObjectURL(a.href);
+    }
+  });
+  $('#fileImport').addEventListener('change', function(e){
+    var files = e.target.files; var f = files && files[0]; if(!f) return;
+    var rd = new FileReader();
+    rd.onload = function(){
+      try{ var obj = JSON.parse(rd.result); state.data = migrateData(obj); saveData(); renderAdmin(); renderCards(); toast('Importado'); }
+      catch(err){ alert('JSON inválido'); }
+      e.target.value = '';
+    };
+    rd.readAsText(f);
+  });
+  $('#btnApplyPaste').addEventListener('click', function(){
+    try{ var obj = JSON.parse($('#jsonPaste').value); state.data = migrateData(obj); saveData(); renderAdmin(); renderCards(); toast('Aplicado'); }
+    catch(err){ alert('JSON inválido'); }
+  });
+
+  // Guardar acceso
+  $('#btnSaveAccess').addEventListener('click', function(){
+    var cur = $('#accCur').value, nu = $('#accNew').value, nu2 = $('#accNew2').value, usr = $('#accUser').value;
+    if(cur !== state.admin.pass){ alert('Contraseña actual incorrecta'); return; }
+    if(nu && nu !== nu2){ alert('La nueva contraseña no coincide'); return; }
+    state.admin.user = usr || state.admin.user;
+    if(nu){ state.admin.pass = nu; }
+    localStorage.setItem(storeKeys.admin, JSON.stringify(state.admin));
+    $('#accCur').value = $('#accNew').value = $('#accNew2').value = '';
+    toast('Acceso actualizado');
+  });
+
+  // ==== Init ====
+  async function init(){
+    await loadData();
+    loadAdmin();
+renderCards();
+    setupCarousel();
+    if(location.hash === '#admin'){ openLogin(); }
+  }
+  init();
+
+  $('#modal').addEventListener('click', function(){ if(!panel.classList.contains('show')) closeLogin(); });
+  ['click','keydown','touchstart'].forEach(function(ev){ window.addEventListener(ev, function(){ if(state.logged){ startIdle(); } }, {passive:true}); });
+</script>
+</body>
+</html>
